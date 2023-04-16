@@ -28,7 +28,7 @@ TEST_CASE("Rounding floats correct"){
     CHECK(pi_rounded==M_PI);
 }
 
-TEST_CASE("== operator works correctly"){
+TEST_CASE("== operator works correctly with float at left"){
     ariel::Fraction a(3,1);
     CHECK(3.0==a);
 }
@@ -39,39 +39,77 @@ TEST_CASE("Reduced form done correctly"){
     ariel::Fraction third_twelve(3,12);
     ariel::Fraction two_24(2,24);
     CHECK(sixth1+sixth2 == third_twelve+two_24);
+    CHECK(sixth1-sixth2 == ariel::Fraction(3, 0));
+    CHECK(sixth1*sixth2 == ariel::Fraction(2, 72));
+    CHECK(sixth1/sixth2 == ariel::Fraction(9, 9));
 }
 
 TEST_CASE("Checking arithmetical operators works"){
+    ariel::Fraction first(3, 4);
+    ariel::Fraction second(1, 4);
     
     //operator *:
-
+    CHECK(first*second == ariel::Fraction(3, 16));
+    
     //operator /:
+    CHECK(first/second == 3.0);
 
     //operator +:
+    CHECK(first+second == 1.0);
 
     //operator -:
-
+    CHECK(first-second == 0.5);
 }
 
 TEST_CASE("Checking relational operators works"){
+    ariel::Fraction one(4,8);
+    ariel::Fraction two(1,4);
+
     // > operator:
-    
+    CHECK(one > two);
+
     // < operator:
+    CHECK(two < one);
 
     // >= operator:
+    CHECK(one >= two);
 
     // <= operator:
+    CHECK(two <= one);
 
-    // == operator:
+    // != operator:
+    CHECK(two != one);
 
 }
 
 TEST_CASE("Checking unary operators works"){
+    ariel::Fraction frac(0,1);
+
     // ++ operator:
+    CHECK(++frac == 1.0);
 
     // -- operator:
+    CHECK(--frac == 0.0);
 
     // operator ++:
+    CHECK(frac++ == 0.0);
 
     // operator --:
+    CHECK(frac-- == 1.0);
+}
+
+TEST_CASE("Fraction against itself"){
+    ariel::Fraction first(3,18);
+    ariel::Fraction second(9, 15);
+
+    CHECK(first-first == 0);
+    CHECK(second/second == ariel::Fraction(1,1));
+}
+
+TEST_CASE("Check assignment operator"){
+    ariel::Fraction first(3,18);
+    ariel::Fraction one(4,8);
+    ariel::Fraction two(1,4);
+    first = one - two;
+    CHECK(first == 0.25);
 }

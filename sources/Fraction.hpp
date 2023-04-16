@@ -19,6 +19,7 @@ namespace ariel{
     public:
         Fraction(int numerator, int denominator);
         Fraction(const Fraction &fract);
+        Fraction(Fraction&&) noexcept;
         explicit Fraction(float flo);
         ~Fraction();
 
@@ -32,6 +33,7 @@ namespace ariel{
         // - operator:
         Fraction operator-(const Fraction &other) const;
         Fraction operator-(float flo) const;
+        Fraction operator-(const Fraction &other);
         friend Fraction operator-(float flo, const Fraction &fract);
         Fraction& operator-=(const Fraction &other);
         Fraction& operator-=(float flo);
@@ -46,6 +48,7 @@ namespace ariel{
         // / operator:
         Fraction operator/(const Fraction &other) const;
         Fraction operator/(float flo) const;
+        Fraction operator/(const Fraction &other);
         friend Fraction operator/(float flo, const Fraction &fract);
         Fraction& operator/=(const Fraction &other);
         Fraction& operator/=(float flo);
@@ -63,8 +66,9 @@ namespace ariel{
         const Fraction operator--(int);
 
         // operator =:
-        Fraction operator=(const Fraction &other) const;
-        Fraction operator=(float flo) const;
+        Fraction& operator=(const Fraction &other);
+        Fraction& operator=(float flo);
+        Fraction& operator=(Fraction&&) noexcept;
         // friend float operator=(float flo, const Fraction &fract);
 
         // == operator:

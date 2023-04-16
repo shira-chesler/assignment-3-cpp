@@ -24,6 +24,10 @@ Fraction::Fraction(float flo){
 
 }
 
+Fraction::Fraction(Fraction&&) noexcept{
+    
+}
+
 Fraction::~Fraction(){
 
 }
@@ -57,6 +61,10 @@ Fraction Fraction::operator-(const Fraction &other) const{
 }
 
 Fraction Fraction::operator-(float flo) const{
+    return *this;
+}
+
+Fraction Fraction::operator-(const Fraction &other){
     return *this;
 }
 
@@ -104,6 +112,10 @@ Fraction Fraction::operator/(float flo) const{
     return *this;
 }
 
+Fraction Fraction::operator/(const Fraction &other){
+    return *this;
+}
+
 Fraction operator/(float flo, const Fraction &fract){
     return fract;
 }
@@ -142,14 +154,17 @@ const Fraction Fraction::operator--(int){
 
 
 // operator =:
-Fraction Fraction::operator=(const Fraction &other) const{
+Fraction& Fraction::operator=(const Fraction &other){
     return *this;
 }
 
-Fraction Fraction::operator=(float flo) const{
+Fraction& Fraction::operator=(float flo){
     return *this;
 }
 
+Fraction& Fraction::operator=(Fraction&&) noexcept{
+    return *this;
+}
 
 // == operator:
 bool Fraction::operator==(const Fraction &other) const{
