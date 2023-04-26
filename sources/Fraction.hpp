@@ -11,11 +11,12 @@ namespace ariel{
     private:
         int numerator;
         int denominator;
-        std::vector<int> divisors_of_numerator;
-        std::vector<int> divisors_of_denominator;
+        int can_bereduced_by=1;
 
-        void find_divisors(char numer_or_deno);
-        bool is_overflow(int first, int second) const;
+        void check_denom_valid(int denominator, int construct_or_divide) const;
+        void Unary_operator_chng(Fraction& fract);
+        int find_best_divisor(int first, int second) const;
+        int find_lcm(int first, int second) const;
     public:
         Fraction(int numerator, int denominator);
         Fraction(const Fraction &fract);
@@ -33,7 +34,8 @@ namespace ariel{
         // - operator:
         Fraction operator-(const Fraction &other) const;
         Fraction operator-(float flo) const;
-        Fraction operator-(const Fraction &other);
+        // Fraction operator-(const Fraction &other);
+        Fraction operator-() const;
         friend Fraction operator-(float flo, const Fraction &fract);
         Fraction& operator-=(const Fraction &other);
         Fraction& operator-=(float flo);
@@ -48,7 +50,7 @@ namespace ariel{
         // / operator:
         Fraction operator/(const Fraction &other) const;
         Fraction operator/(float flo) const;
-        Fraction operator/(const Fraction &other);
+        // Fraction operator/(const Fraction &other);
         friend Fraction operator/(float flo, const Fraction &fract);
         Fraction& operator/=(const Fraction &other);
         Fraction& operator/=(float flo);
