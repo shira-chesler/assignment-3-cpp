@@ -1,6 +1,7 @@
 #include "doctest.h"
 #include "sources/Fraction.hpp"
 
+#include <iostream>
 #include <stdexcept>
 #include <stddef.h>
 #include <limits>
@@ -38,10 +39,10 @@ TEST_CASE("Reduced form done correctly"){
     ariel::Fraction sixth2(1,6);
     ariel::Fraction third_twelve(3,12);
     ariel::Fraction two_24(2,24);
-    CHECK(sixth1+sixth2 == third_twelve+two_24);
-    CHECK(sixth1-sixth2 == ariel::Fraction(3, 0));
-    CHECK(sixth1*sixth2 == ariel::Fraction(2, 72));
-    CHECK(sixth1/sixth2 == ariel::Fraction(9, 9));
+    CHECK((sixth1+sixth2) == (third_twelve+two_24));
+    CHECK((sixth1-sixth2) == (ariel::Fraction(0, 6)));
+    CHECK((sixth1*sixth2) == (ariel::Fraction(2, 72)));
+    CHECK((sixth1/sixth2) == (ariel::Fraction(9, 9)));
 }
 
 TEST_CASE("Checking arithmetical operators works"){
@@ -58,7 +59,7 @@ TEST_CASE("Checking arithmetical operators works"){
     CHECK(first+second == 1.0);
 
     //operator -:
-    CHECK(first-second == 0.5);
+    CHECK(first-second == 1.0/2);
 }
 
 TEST_CASE("Checking relational operators works"){
