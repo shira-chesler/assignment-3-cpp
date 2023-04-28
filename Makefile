@@ -12,10 +12,18 @@ SOURCES=$(wildcard $(SOURCE_PATH)/*.cpp)
 HEADERS=$(wildcard $(SOURCE_PATH)/*.hpp)
 OBJECTS=$(subst sources/,objects/,$(subst .cpp,.o,$(SOURCES)))
 
-run: demo
-	./$^
+run: test1 test2
 
 demo: Demo.o $(OBJECTS) 
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+test1: TestRunner.o StudentTest1.o  $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+test2: TestRunner.o StudentTest2.o  $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+main: Main.o $(OBJECTS) 
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 test: TestCounter.o Test.o $(OBJECTS)
@@ -35,5 +43,4 @@ $(OBJECT_PATH)/%.o: $(SOURCE_PATH)/%.cpp $(HEADERS)
 	$(CXX) $(CXXFLAGS) --compile $< -o $@
 
 clean:
-	rm -f $(OBJECTS) *.o test* demo*
-	rm -f StudentTest*.cpp
+	rm -f $(OBJECTS) *.o test* demo* main*
