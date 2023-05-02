@@ -13,7 +13,7 @@ namespace ariel{
         int denominator;
         int can_bereduced_by=1;
 
-        void check_overflow(int f_num, int s_num, char op) const;
+        void check_overflow(int f_num, int s_num, char oper) const;
         void check_denom_valid(int denominator, int construct_or_divide) const;
         void Unary_operator_chng(Fraction& fract);
         int find_best_divisor(int first, int second) const;

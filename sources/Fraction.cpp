@@ -47,24 +47,24 @@ int Fraction::find_lcm(int first, int second) const{
     return mul/gcd;
 }
 
-void Fraction::check_overflow(int f_num, int s_num, char op) const{
+void Fraction::check_overflow(int f_num, int s_num, char oper) const{
     long first = f_num;
     long second = s_num;
-    if (op=='+')
+    if (oper=='+')
     {
         if(first+second != f_num+s_num)
         {
             throw std::overflow_error("add overflows");
         }
     }
-    else if (op=='-')
+    else if (oper=='-')
     {
         if(first-second != f_num-s_num)
         {
             throw std::overflow_error("sub overflows");
         }
     }
-    else if (op=='*')
+    else if (oper=='*')
     {
         if(first*second != f_num*s_num)
         {
@@ -358,6 +358,13 @@ Fraction& Fraction::operator=(Fraction&& fract) noexcept{
 
 // == operator:
 bool Fraction::operator==(const Fraction &other) const{
+    float ths = static_cast<float>(this->numerator)/static_cast<float>(this->denominator);
+    float othr = static_cast<float>(other.numerator)/static_cast<float>(other.denominator);
+    if (std::abs(ths-othr)<0.001)
+    {
+        return true;
+    }
+    
     return (*this)>=other && (*this)<=other;
 }
 
