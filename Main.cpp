@@ -1,36 +1,108 @@
-#include "sources/Fraction.hpp"
 #include <iostream>
-int main()
-{
-    ariel::Fraction sixth1(1,6);
-    ariel::Fraction sixth2(1,6);
-    ariel::Fraction third_twelve(3,12);
-    ariel::Fraction two_24(2,24);
-    std::cout << (sixth1+sixth2) << std::endl;
-    std::cout << (third_twelve+two_24) << std::endl;
-    std::cout << (sixth1-sixth2) << std::endl;
-    std::cout << (ariel::Fraction(1, 6)) << std::endl;
+#include <sstream>
+#include <stdexcept>
+#include <cassert>
 
-    ariel::Fraction pos(-6,-3);
-    std::cout << pos << std::endl;
+using namespace std;
 
-    std::cout << ariel::Fraction(0,6) << std::endl;
+#include "sources/Fraction.hpp"
 
-    ariel::Fraction first(3, 4);
-    ariel::Fraction second(1, 4);
-    std::cout << (first-0.5) << std::endl;
-    std::cout << first-second-0.5 << std::endl;
+using namespace ariel;
 
-    ariel::Fraction d(4, 5);
-    float e = 0.4;
-    ariel::Fraction f = e - d; 
-    std::cout << f << std::endl;
 
-    ariel::Fraction g(4, 5);
-    float h = 0.4;
-    ariel::Fraction i = h / g;
-    std::cout << i << std::endl;
+int main() {
+    ariel::Fraction a(1, 2);
+    ariel::Fraction b(1, 4);
+    ariel::Fraction c;
 
-    std::cout << ariel::Fraction{0, 1} * ariel::Fraction{-4, 7} << std::endl;
+    //arithmetic operators
+    c = a + b;
+    assert(c.getNumerator() == 3 && c.getDenominator() == 4);
 
+    c = a - b;
+    assert(c.getNumerator() == 1 && c.getDenominator() == 4);
+
+    c = a * b;
+    assert(c.getNumerator() == 1 && c.getDenominator() == 8);
+
+    c = a / b;
+    assert(c.getNumerator() == 2 && c.getDenominator() == 1);
+
+    //comparison operators
+    assert(a == a);
+    assert(a != b);
+    assert(b < a);
+    assert(a > b);
+    assert(b <= a);
+    assert(a <= a);
+    assert(a >= b);
+    assert(a >= a);
+
+    //copy ctr
+    ariel::Fraction d(a);
+    assert(d.getNumerator() == a.getNumerator() && d.getDenominator() == a.getDenominator());
+    //copy assignment
+    ariel::Fraction e = b;
+    assert(e.getNumerator() == b.getNumerator() && e.getDenominator() == b.getDenominator());
+
+    //post a pre
+    a++;
+    assert(a.getNumerator() == 3 && a.getDenominator() == 2);
+    b--;
+    assert(b.getNumerator() == -3 && b.getDenominator() == 4);
+
+    ariel::Fraction p(1, 2);
+    ++p;
+    assert(p.getNumerator() == 3 && p.getDenominator() == 2);
+
+    bool caught = false;
+    //errors
+    try {
+        ariel::Fraction f(1, 0);
+    } catch (std::invalid_argument &e) {
+        caught = true;
+    }
+    assert(caught);
+    //reduced
+    ariel::Fraction g(2, 4);
+    g*=1;
+    assert(g.getNumerator() == 1 && g.getDenominator() == 2);
+    ariel::Fraction h(-1, -2);
+    h*=1;
+    assert(h.getNumerator() == 1 && h.getDenominator() == 2);
+    ariel::Fraction i(0.5);
+    i*=1;
+    assert(i.getNumerator() == 1 && i.getDenominator() == 2);
+
+    ariel::Fraction j(1, 2);
+    j += ariel::Fraction(1, 2);
+    assert(j.getNumerator() == 1 && j.getDenominator() == 1);
+
+    ariel::Fraction k(3, 4);
+    k -= ariel::Fraction(1, 4);
+    assert(k.getNumerator() == 1 && k.getDenominator() == 2);
+
+    ariel::Fraction l(1, 2);
+    l *= ariel::Fraction(1, 2);
+    assert(l.getNumerator() == 1 && l.getDenominator() == 4);
+
+    ariel::Fraction m(1, 2);
+    m /= ariel::Fraction(1, 2);
+    assert(m.getNumerator() == 1 && m.getDenominator() == 1);
+
+    std::stringstream ss;
+    ss << ariel::Fraction(1, 2);
+    assert(ss.str() == "1/2");
+
+    ss.str(""); // clear the stringstream
+    ss << ariel::Fraction(-1, 2);
+    assert(ss.str() == "-1/2");
+
+    ariel::Fraction n;
+    ss.str("3 4");
+    ss >> n;
+    assert(n.getNumerator() == 3 && n.getDenominator() == 4);
+
+    std::cout << "All tests passed." << std::endl;
+    return 0;
 }
