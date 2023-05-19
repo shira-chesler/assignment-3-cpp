@@ -1,11 +1,8 @@
 #include <iostream>
 #include "Fraction.hpp"
-#include <limits>
-#include <exception>
-#include <vector>
 
 namespace ariel{
-
+//checks if denominator is not 0 in the ctr or with / operator
 void Fraction::check_denom_valid(int denominator, int construct_or_divide) const{
     if (denominator==0 && construct_or_divide==0)
     {
@@ -17,19 +14,20 @@ void Fraction::check_denom_valid(int denominator, int construct_or_divide) const
     }
 }
 
+//find gcd of the of 2 numbers
 int Fraction::find_best_divisor(int first, int second) const{
     // Undefined gcd - Doesn't suppose to happen
     if (first == 0 && second == 0) {
         return 0;
-    } 
+    }
     else if (first == 0 || second == 0) {
         // returns the non-zero integer
         return std::max(first, second);
-    } 
+    }
     else if (first == second) {
         // Base case
         return first;
-    } 
+    }
     else {
         // Recursive case
         while (second != 0) {
@@ -41,12 +39,14 @@ int Fraction::find_best_divisor(int first, int second) const{
     }
 }
 
+//get the lcm of 2 numbers
 int Fraction::find_lcm(int first, int second) const{
     int gcd = find_best_divisor(first, second);
     int mul = first*second;
     return mul/gcd;
 }
 
+//checks for overflow based on the operator between 2 numbers
 void Fraction::check_overflow(int f_num, int s_num, char oper) const{
     long first = f_num;
     long second = s_num;
@@ -71,8 +71,9 @@ void Fraction::check_overflow(int f_num, int s_num, char oper) const{
             throw std::overflow_error("mul or div overflows");
         }
     }
-    
+
 }
+
 
 //gets
 int Fraction::getNumerator() const
@@ -85,6 +86,7 @@ int Fraction::getDenominator() const
     return this->denominator;
 }
 
+
 //Destructor and Constructors
 Fraction::Fraction(){
     this->numerator = 0;
@@ -92,6 +94,7 @@ Fraction::Fraction(){
     this->can_bereduced_by = 1;
 }
 
+//default constructor
 Fraction::Fraction(int numerator, int denominator){
     check_denom_valid(denominator, 0);
     this->numerator = numerator;
@@ -99,6 +102,7 @@ Fraction::Fraction(int numerator, int denominator){
     this->can_bereduced_by = find_best_divisor(numerator,denominator);
 }
 
+//copy constructor
 Fraction::Fraction(const Fraction &fract){
     check_denom_valid(fract.denominator, 0);
     this->numerator = fract.numerator;
@@ -106,12 +110,14 @@ Fraction::Fraction(const Fraction &fract){
     this->can_bereduced_by = find_best_divisor(numerator,denominator);
 }
 
+//float constructor
 Fraction::Fraction(float flo){
     this->numerator = (int) (flo*1000);
     this->denominator = 1000;
     this->can_bereduced_by = find_best_divisor(this->numerator,this->denominator);
 }
 
+//move constructor
 Fraction::Fraction(Fraction&& other) noexcept{
     check_denom_valid(other.denominator, 0);
     this->numerator = other.numerator;
@@ -119,17 +125,19 @@ Fraction::Fraction(Fraction&& other) noexcept{
     this->can_bereduced_by = other.can_bereduced_by;
 }
 
-Fraction::~Fraction(){
+//destructor
+Fraction::~Fraction()=default;
 
-}
 
+//checks overflow for plus or minus
+//
 Fraction Fraction::plus_mins_op(int thisnum, int thisden, int thisred, int othnum, int othden, int othred, int plus_minus) const{
     int lcm = find_lcm(thisden/thisred, othden/othred);
     check_overflow((thisnum/thisred), (lcm/(thisden/thisred)),'*');
     int f_num = (thisnum/thisred)*(lcm/(thisden/thisred));
     check_overflow((othnum/othred), (lcm/(othden/othred)),'*');
     int s_num = (othnum/othred)*(lcm/(othden/othred));
-    Fraction tmp(0, 1);
+    Fraction tmp;
     if (plus_minus == 0)
     {
         check_overflow(f_num, s_num, '+');
@@ -148,63 +156,70 @@ Fraction Fraction::plus_mins_op(int thisnum, int thisden, int thisred, int othnu
     return Fraction(numerator, denominator);
 }
 
-// + operator:
+// + operator: frac+frac
 Fraction Fraction::operator+(const Fraction &other) const{
     return plus_mins_op(this->numerator,this->denominator, this->can_bereduced_by, other.numerator,other.denominator,other.can_bereduced_by,0);
 }
 
+// + operator: frac+float
 Fraction Fraction::operator+(float flo) const{
     return (*this)+Fraction(flo);
 }
 
+// + operator: float+frac
 Fraction operator+(float flo, const Fraction &fract){
     return fract+Fraction(flo);
 }
 
+//+= operator: frac+=frac
 Fraction& Fraction::operator+=(const Fraction &other){
     (*this) = (*this) + other;
     this->can_bereduced_by = find_best_divisor(this->numerator, this->denominator);
     return *this;
 }
 
+//+= operator: frac+=float
 Fraction& Fraction::operator+=(float flo){
     (*this)+=Fraction(flo);
     return *this;
 }
 
 
-// - operator:
+// - operator: frac-frac
 Fraction Fraction::operator-(const Fraction &other) const{
     return plus_mins_op(this->numerator,this->denominator, this->can_bereduced_by, other.numerator,other.denominator,other.can_bereduced_by,1);
 }
 
+//- operator: frac-float
 Fraction Fraction::operator-(float flo) const{
     return (*this)-Fraction(flo);
 }
 
-// Fraction Fraction::operator-(const Fraction &other){
-//     return plus_mins_op(this->numerator,this->denominator, this->can_bereduced_by, other.numerator,other.denominator,other.can_bereduced_by,1);
-// }
-
+//- operator: -frac
 Fraction Fraction::operator-() const{
     return Fraction(-this->numerator, this->denominator);
 }
 
+//- operator: float-frac
 Fraction operator-(float flo, const Fraction &fract){
     return -(fract-flo);
 }
 
+//-= operator: frac-=frac
 Fraction& Fraction::operator-=(const Fraction &other){
     (*this) = (*this)-other;
     this->can_bereduced_by = find_best_divisor(this->numerator, this->denominator);
     return *this;
 }
 
+//-= operator: frac-=float
 Fraction& Fraction::operator-=(float flo){
     (*this)-=Fraction(flo);
     return *this;
 }
 
+
+//checks for overflow based on the operator *
 Fraction Fraction::mul_div_op(int fup, int sup, int fdown, int sdown, int fred, int sred) const{
     check_overflow((fup/fred), (sup/sred), '*');
     check_overflow((fdown/fred), (sdown/sred), '*');
@@ -216,84 +231,69 @@ Fraction Fraction::mul_div_op(int fup, int sup, int fdown, int sdown, int fred, 
     return Fraction(num, den);
 }
 
-// * operator:
+// * operator: frac*frac
 Fraction Fraction::operator*(const Fraction &other) const{
     if(this->numerator == 0 || other.numerator == 0){
         return Fraction(0,1);
     }
-    // int num = (this->numerator/this->can_bereduced_by)*(other.numerator/other.can_bereduced_by);
-    // int den = (this->denominator/this->can_bereduced_by)*(other.denominator/other.can_bereduced_by);
-    // int reduce_by = find_best_divisor(num, den);
-    // den /= reduce_by;
-    // num /= reduce_by;
     return mul_div_op(this->numerator, other.numerator,this->denominator,other.denominator,this->can_bereduced_by,other.can_bereduced_by);
-    // return Fraction(num, den);
-
 }
 
+// * operator: frac*float
 Fraction Fraction::operator*(float flo) const{
     return (*this)*Fraction(flo);
 }
 
+// * operator: float*frac
 Fraction operator*(float flo, const Fraction &fract){
     return fract*flo;
 }
 
+// *= operator: frac*=frac
 Fraction& Fraction::operator*=(const Fraction &other){
     (*this) = (*this)*other;
     this->can_bereduced_by = find_best_divisor(this->numerator, this->denominator);
     return *this;
 }
 
+// *= operator: frac*=float
 Fraction& Fraction::operator*=(float flo){
     (*this)*=Fraction(flo);
     return *this;
 }
 
 
-// / operator:
+// / operator: frac/frac
 Fraction Fraction::operator/(const Fraction &other) const{
     check_denom_valid(other.numerator, 1);
-    // int num = (this->numerator/this->can_bereduced_by)*(other.denominator/other.can_bereduced_by);
-    // int den = (this->denominator/this->can_bereduced_by)*(other.numerator/other.can_bereduced_by);
-    // int can_be_reduced_by = find_best_divisor(num, den);
-    // num /= can_be_reduced_by;
-    // den /= can_be_reduced_by;
-    // return Fraction(num, den);
     return mul_div_op(this->numerator,other.denominator,this->denominator,other.numerator,this->can_bereduced_by,other.can_bereduced_by);
 }
 
+// / operator: frac/float
 Fraction Fraction::operator/(float flo) const{
     return (*this)/Fraction(flo);
 }
 
-// Fraction Fraction::operator/(const Fraction &other){
-//     std::cout << 2 << std::endl;
-//     int num = (this->numerator/this->can_bereduced_by)*(other.denominator/other.can_bereduced_by);
-//     int den = (this->denominator/this->can_bereduced_by)*(other.numerator/other.can_bereduced_by);
-//     int can_be_reduced_by = find_best_divisor(num, den);
-//     std::cout << "hey" << std::endl;
-//     num /= can_be_reduced_by;
-//     den /= can_be_reduced_by;
-//     return Fraction(num, den);
-// }
-
+// / operator: float/frac
 Fraction operator/(float flo, const Fraction &fract){
     return Fraction(flo)/fract;
 }
 
+// /= operator: frac/=frac
 Fraction& Fraction::operator/=(const Fraction &other){
     (*this) = (*this)/other;
     this->can_bereduced_by = find_best_divisor(this->numerator, this->denominator);
     return *this;
 }
 
+// /= operator: frac/=float
 Fraction& Fraction::operator/=(float flo){
     (*this)/=Fraction(flo);
     return *this;
 }
 
 
+//reduce frac for f++ ++f f-- --f
 void Fraction::Unary_operator_chng(Fraction& fract){
     fract.can_bereduced_by = find_best_divisor(fract.numerator, fract.denominator);
     fract.numerator/=fract.can_bereduced_by;
@@ -335,7 +335,7 @@ const Fraction Fraction::operator--(int){
 }
 
 
-// operator =:
+// operator =: frac=frac
 Fraction& Fraction::operator=(const Fraction &other){
     this->numerator = other.numerator;
     this->denominator = other.denominator;
@@ -343,11 +343,13 @@ Fraction& Fraction::operator=(const Fraction &other){
     return *this;
 }
 
+// operator =: frac=float
 Fraction& Fraction::operator=(float flo){
     (*this) = Fraction(flo);
     return *this;
 }
 
+//move operator
 Fraction& Fraction::operator=(Fraction&& fract) noexcept{
     (*this) = fract;
     fract.denominator = 1;
@@ -356,7 +358,7 @@ Fraction& Fraction::operator=(Fraction&& fract) noexcept{
     return *this;
 }
 
-// == operator:
+// == operator: compare frac==frac
 bool Fraction::operator==(const Fraction &other) const{
     float ths = static_cast<float>(this->numerator)/static_cast<float>(this->denominator);
     float othr = static_cast<float>(other.numerator)/static_cast<float>(other.denominator);
@@ -364,34 +366,38 @@ bool Fraction::operator==(const Fraction &other) const{
     {
         return true;
     }
-    
+
     return (*this)>=other && (*this)<=other;
 }
 
+// == operator: compare frac==float
 bool Fraction::operator==(float flo) const{
     return (*this)==Fraction(flo);
 }
 
+// == operator: compare float==frac
 bool operator==(float flo, const Fraction &fract){
     return fract==flo;
 }
 
 
-// != operator:
+// != operator:compare frac!=frac
 bool Fraction::operator!=(const Fraction &other) const{
     return !((*this)==other);
 }
 
+// != operator:compare frac!=float
 bool Fraction::operator!=(float flo) const{
     return (*this)!=Fraction(flo);
 }
 
+// != operator:compare float!=frac
 bool operator!=(float flo, const Fraction &fract){
     return fract!=flo;
 }
 
 
-// < operator:
+// < operator: frac<frac
 bool Fraction::operator<(const Fraction &other) const{
     int thisnum = this->numerator;
     int thisden = this->denominator;
@@ -408,58 +414,66 @@ bool Fraction::operator<(const Fraction &other) const{
     return thisnum*othden<thisden*othnum;
 }
 
+// < operator: frac<float
 bool Fraction::operator<(float flo) const{
     return (*this)<Fraction(flo);
 }
 
+// < operator: float<frac
 bool operator<(float flo, const Fraction &fract){
     return fract>flo;
 }
 
 
-// <= operator:
+// <= operator: frac<=frac
 bool Fraction::operator<=(const Fraction &other) const{
     return !((*this)>other);
 }
 
+// <= operator: frac<=float
 bool Fraction::operator<=(float flo) const{
     return (*this)<=Fraction(flo);;
 }
 
+// <= operator: float<=frac
 bool operator<=(float flo, const Fraction &fract){
     return !(fract<flo);
 }
 
 
-// > operator:
+// > operator: frac>frac
 bool Fraction::operator>(const Fraction &other) const{
     return other<(*this);
 }
 
+// > operator: frac>float
 bool Fraction::operator>(float flo) const{
     return (*this)>Fraction(flo);;
 }
 
+// > operator: float>frac
 bool operator>(float flo, const Fraction &fract){
     return fract<flo;
 }
 
 
-// >= operator:
+// >= operator:frac>=frac
 bool Fraction::operator>=(const Fraction &other) const{
     return !((*this)<other);
 }
 
+// >= operator:frac>=float
 bool Fraction::operator>=(float flo) const{
     return (*this)>=Fraction(flo);
 }
 
+// >= operator:float>=frac
 bool operator>=(float flo, const Fraction &fract){
     return fract<=flo;
 }
 
 
-// >> operator:
+// >> operator: input from user seperated by space
 std::istream &operator>>(std::istream &ins, Fraction &fract){
     int num, den;
     bool created = false;
@@ -482,7 +496,8 @@ std::istream &operator>>(std::istream &ins, Fraction &fract){
     return ins;
 }
 
-// << operator:
+
+// << operator: output the fraction nume/deno
 std::ostream &operator<<(std::ostream &outs,const Fraction &fract){
     int fracden = fract.denominator/fract.can_bereduced_by;
     int fracnum = fract.numerator/fract.can_bereduced_by;
@@ -491,7 +506,7 @@ std::ostream &operator<<(std::ostream &outs,const Fraction &fract){
         fracden = - fracden;
         fracnum = - fracnum;
     }
-    
+
     outs << fracnum << "/" << fracden;
     return outs;
 }

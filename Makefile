@@ -26,7 +26,7 @@ test2: TestRunner.o StudentTest2.o  $(OBJECTS)
 main: Main.o $(OBJECTS) 
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-test: TestCounter.o Test.o $(OBJECTS)
+test: TestRunner.o Test.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 tidy:
