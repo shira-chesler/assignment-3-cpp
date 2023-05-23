@@ -126,11 +126,19 @@ Fraction::Fraction(Fraction&& other) noexcept{
 }
 
 //destructor
-Fraction::~Fraction()=default;
+Fraction::~Fraction(){
+
+}
 
 
 //checks overflow for plus or minus
-//
+// let's assume that our fractions are thisnum/thisden and othnum/othden
+// the parameters thisred and othred are the can_reduce_by parameter for each one of the fractions
+// in order to add two fractions we need to find then a common denominator. how?
+// we'll multiply both denominators in the number that would make them the lcm
+// then, we'll multiply each one of the nuerators respectively in the number we multiplied its numerator so we won't change the fraction
+// then we can add/ subtract
+// before each multiplying operation, we'll check that it dosen't overflows 
 Fraction Fraction::plus_mins_op(int thisnum, int thisden, int thisred, int othnum, int othden, int othred, int plus_minus) const{
     int lcm = find_lcm(thisden/thisred, othden/othred);
     check_overflow((thisnum/thisred), (lcm/(thisden/thisred)),'*');
@@ -219,7 +227,12 @@ Fraction& Fraction::operator-=(float flo){
 }
 
 
-//checks for overflow based on the operator *
+//checks for overflow based on the operator * (multiply and divide)
+// assume we have two fractions: first=(fup/fdown) and second=(sup/sdown)
+// when multiplying two fractions, the two fractions are indeed first and second
+// when dividing two fractions - one=a/b and two=c/d: a/b/c/d = a*d/b*c = (a/b) * (d/c) -
+// which means that given the correct parameters, we need to compute here multyplying two fractions, as well
+// before each multiply, we chack that it doesn't overflow
 Fraction Fraction::mul_div_op(int fup, int sup, int fdown, int sdown, int fred, int sred) const{
     check_overflow((fup/fred), (sup/sred), '*');
     check_overflow((fdown/fred), (sdown/sred), '*');
@@ -358,6 +371,7 @@ Fraction& Fraction::operator=(Fraction&& fract) noexcept{
     return *this;
 }
 
+
 // == operator: compare frac==frac
 bool Fraction::operator==(const Fraction &other) const{
     float ths = static_cast<float>(this->numerator)/static_cast<float>(this->denominator);
@@ -403,10 +417,13 @@ bool Fraction::operator<(const Fraction &other) const{
     int thisden = this->denominator;
     int othnum = other.numerator;
     int othden = other.denominator;
+    
+    //multyplying will change sign - we want to make the other fraction positive
     if (thisnum<0 && othden<0){
         othden = -othden;
         othnum = -othnum;
     }
+    //multyplying will change sign - we want to make this fraction positive
     if(thisden<0 && othnum<0){
         thisden = -thisden;
         thisnum = -thisnum;
@@ -499,8 +516,11 @@ std::istream &operator>>(std::istream &ins, Fraction &fract){
 
 // << operator: output the fraction nume/deno
 std::ostream &operator<<(std::ostream &outs,const Fraction &fract){
+    // printing reduced fraction
     int fracden = fract.denominator/fract.can_bereduced_by;
     int fracnum = fract.numerator/fract.can_bereduced_by;
+    
+    // the minus is below the fraction bar
     if (fracden<0)
     {
         fracden = - fracden;
